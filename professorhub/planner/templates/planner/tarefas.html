@@ -1,0 +1,211 @@
+{% extends 'planner/base.html' %}
+{% block title %} tarefas- ProfessorHub{% endblock %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Tarefas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            background-color: #45a049;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 40%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        input[type="text"], input[type="date"], select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Gestão de Tarefas</h1>
+
+    <button class="btn" id="addTaskBtn">Adicionar Tarefa</button>
+
+    <!-- Modal -->
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <h2>Nova Tarefa</h2>
+            <form id="taskForm">
+                <input type="text" id="title" placeholder="Título da tarefa" required>
+                <input type="date" id="dueDate" required>
+                <select id="priority" required>
+                    <option value="" disabled selected>Selecione a prioridade</option>
+                    <option value="baixa">Baixa</option>
+                    <option value="média">Média</option>
+                    <option value="alta">Alta</option>
+                </select>
+                <button type="submit" class="btn">Salvar Tarefa</button>
+            </form>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Data de Entrega</th>
+                <th>Prioridade</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="taskTable">
+            <!-- Tarefas serão adicionadas aqui -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // Referências aos elementos
+    const addTaskBtn = document.getElementById('addTaskBtn');
+    const taskModal = document.getElementById('taskModal');
+    const closeModal = document.getElementById('closeModal');
+    const taskForm = document.getElementById('taskForm');
+    const taskTable = document.getElementById('taskTable');
+
+    // Função para abrir o modal
+    addTaskBtn.onclick = function() {
+        taskModal.style.display = "block";
+    }
+
+    // Função para fechar o modal
+    closeModal.onclick = function() {
+        taskModal.style.display = "none";
+    }
+
+    // Fechar o modal ao clicar fora dele
+    window.onclick = function(event) {
+        if (event.target == taskModal) {
+            taskModal.style.display = "none";
+        }
+    }
+
+    // Função para adicionar tarefa à tabela
+    taskForm.onsubmit = function(event) {
+        event.preventDefault();
+
+        const title = document.getElementById('title').value;
+        const dueDate = document.getElementById('dueDate').value;
+        const priority = document.getElementById('priority').value;
+
+        // Criando a nova linha na tabela
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${title}</td>
+            <td>${dueDate}</td>
+            <td>${priority}</td>
+            <td><button class="btn deleteBtn">Excluir</button></td>
+        `;
+
+        // Adicionando a linha à tabela
+        taskTable.appendChild(row);
+
+        // Limpando os campos do formulário
+        taskForm.reset();
+
+        // Fechando o modal
+        taskModal.style.display = "none";
+
+        // Adicionando evento de exclusão
+        row.querySelector('.deleteBtn').onclick = function() {
+            row.remove();
+        }
+    }
+</script>
+
+</body>
+</html>
+
+{% endblock %}
