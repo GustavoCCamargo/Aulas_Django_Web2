@@ -1,0 +1,42 @@
+{% extends 'planner/base.html' %}
+{% block title %}Adicionar Plano de Aula - ProfessorHub{% endblock %}
+{% block content %}
+<div class="py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Adicionar Plano de Aula - {{ disciplina.nome }}</h2>
+        <a href="{% url 'listar_planos_aula' disciplina.id %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Voltar para Planos de Aula
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post" action="#" id="formPlanoAula">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    {{ form.as_p }}
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Salvar Plano de Aula</button>
+                    <a href="{% url 'listar_planos_aula' disciplina.id %}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Adicionar classes Bootstrap aos campos do formulário
+    document.addEventListener('DOMContentLoaded', function() {
+        // Adicionar classe form-control aos inputs
+        const formInputs = document.querySelectorAll('input, textarea, select');
+        formInputs.forEach(input => {
+            input.classList.add('form-control');
+        });
+    });
+</script>
+{% endblock %}

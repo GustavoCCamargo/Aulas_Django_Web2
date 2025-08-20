@@ -1,0 +1,61 @@
+{% extends 'planner/base.html' %}
+{% block title %}Disciplinas - ProfessorHub{% endblock %}
+{% block content %}
+<div class="py-4">
+    <h2 class="mb-4">Disciplinas</h2>
+    <a href="{% url 'adicionar_disciplina' %}" class="btn btn-success mb-4">
+        <i class="fas fa-plus"></i> Adicionar Disciplina
+    </a>
+    <div class="row" id="disciplineList">
+        {% for disciplina in disciplinas %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ disciplina.nome }}</h5>
+                    <p class="card-text">Período: {{ disciplina.periodo }}</p>
+                    <p class="card-text">Calendário: {{ disciplina.calendario.nome }}</p>
+                    <p class="card-text">Carga Horária: {{ disciplina.carga_horaria }}h</p>
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'listar_planos_aula' disciplina.id %}" class="btn btn-primary">Acessar</a>
+                        <a href="{% url 'editar_disciplina' disciplina.id %}" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalExcluir" onclick="document.getElementById('textoConfirmacao').textContent = 'Tem certeza que deseja excluir a disciplina {{ disciplina.nome }}?'; document.getElementById('formExcluir').action = '/disciplina/remover/{{ disciplina.id }}/';">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                Nenhuma disciplina cadastrada. Clique em "Adicionar Disciplina" para começar.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Modal de confirmação de exclusão -->
+    <div class="modal fade" id="modalExcluir" tabindex="-1" aria-labelledby="modalExcluirLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="post" id="formExcluir">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalExcluirLabel">Confirmar Exclusão</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="textoConfirmacao"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

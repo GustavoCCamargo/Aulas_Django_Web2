@@ -1,0 +1,98 @@
+{% extends "planner/base.html" %}
+{% block title %}Calendários{% endblock %}
+{% block content %}
+
+<!-- Link para adicionar calendario -->
+<a href="{% url 'adicionar_calendario' %}" class="btn btn-success mb-4">
+    <i class="fas fa-plus"></i> Adicionar Calendário
+</a>
+
+<div class="table-responsive">
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Descrição</th>
+                <th>Data de Início</th>
+                <th>Data de Fim</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!--
+Este bloco <tbody> exibe uma lista de calendários em uma tabela usando o template language do Django.
+
+1. {% for calendario in calendarios %}  
+   - Inicia um loop sobre a lista 'calendarios' passada pelo backend. Para cada item, uma linha (<tr>) é criada.
+
+2. <td>{{ calendario.nome }}</td>  
+   - Exibe o nome do calendário.
+
+3. <td>{{ calendario.data_inicio|date:"d-m-Y" }}</td>  
+   - Mostra a data de início do calendário, formatada como 'dia-mês-ano'.
+
+4. <td>{{ calendario.data_fim|date:"d-m-Y" }}</td>  
+   - Mostra a data de fim do calendário, também formatada.
+
+5. <td>  
+   - Contém dois botões de ação:
+     a) Editar:  
+        - Botão desabilitado (disabled), apenas exibe o ícone e texto "Editar".
+     b) Excluir:  
+        - Botão que abre um modal de confirmação ao ser clicado.
+        - O atributo 'onclick' define dinamicamente o texto de confirmação e a URL do formulário de exclusão, usando os dados do calendário selecionado.
+
+6. {% empty %}  
+   - Caso a lista 'calendarios' esteja vazia, exibe uma linha informando "Nenhum calendário cadastrado."
+
+7. {% endfor %}  
+   - Finaliza o loop.
+
+-->
+            {% for calendario in calendarios %}
+                <tr>
+                    <td>{{ calendario.nome }}</td>
+                    <td>{{ calendario.data_inicio|date:"d-m-Y" }}</td>
+                    <td>{{ calendario.data_fim|date:"d-m-Y" }}</td>
+                    <td>
+                        <a href="{% url 'editar_calendario' calendario.id %}" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+                        <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modalExcluir" onclick="document.getElementById('textoConfirmacao').textContent = 'Tem certeza que deseja excluir o calendário {{ calendario.nome }}? As disciplinas associadas, se houver, serão mantidas.'; document.getElementById('formExcluir').action = '/calendario/remover/{{ calendario.id }}/';">
+                            <i class="fas fa-trash"></i> Excluir
+                        </button>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">Nenhum calendário cadastrado.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal de confirmação de exclusão -->
+<div class="modal fade" id="modalExcluir" tabindex="-1" aria-labelledby="modalExcluirLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!--
+                O action do formulário "formexcluir" é injetado dinamicamente na chamada da modal.
+            -->
+            <form method="post" id="formExcluir">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalExcluirLabel">Confirmar Exclusão</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="textoConfirmacao"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

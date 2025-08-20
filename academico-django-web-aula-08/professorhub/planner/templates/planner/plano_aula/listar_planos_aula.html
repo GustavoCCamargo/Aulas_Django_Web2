@@ -1,0 +1,106 @@
+{% extends 'planner/base.html' %}
+{% block title %}Planos de Aula - ProfessorHub{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Atualiza a mensagem e a ação do formulário de exclusão no modal
+    function confirmarExclusao(titulo, url) {
+        document.getElementById('textoConfirmacao').textContent = 
+            'Tem certeza que deseja excluir o plano de aula "' + titulo + '"?';
+        document.getElementById('formExcluir').action = url;
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Planos de Aula - {{ disciplina.nome }}</h2>
+        <div>
+            <a href="{% url 'listar_disciplinas' %}" class="btn btn-secondary me-2">
+                <i class="fas fa-arrow-left"></i> Voltar para Disciplinas
+            </a>
+            <a href="{% url 'adicionar_plano_aula' disciplina.id %}" class="btn btn-success">
+                <i class="fas fa-plus"></i> Adicionar Plano de Aula
+            </a>
+        </div>
+    </div>
+
+    {% if planos %}
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Título</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for plano in planos %}
+                        <tr>
+                            <td>{{ plano.data|date:"d/m/Y" }}</td>
+                            <td>
+                                <strong>{{ plano.titulo }}</strong>
+                                {% if plano.descricao %}
+                                    <br><small class="text-muted">{{ plano.descricao|truncatewords:20 }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge {% if plano.status == 'Concluído' %}bg-success{% elif plano.status == 'Em andamento' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                    {{ plano.status }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'editar_plano_aula' disciplina.id plano.id %}" class="btn btn-sm btn-warning" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <!-- Botão que abre o modal para confirmação da exclusão -->
+                                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#modalExcluir" 
+                                            data-plano-titulo="{{ plano.titulo|escapejs }}"
+                                            data-plano-url="{% url 'remover_plano_aula' disciplina.id plano.id %}"
+                                            onclick="confirmarExclusao(this.dataset.planoTitulo, this.dataset.planoUrl)">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> Nenhum plano de aula cadastrado para esta disciplina.
+    </div>
+    {% endif %}
+</div>
+
+<!-- Modal de Confirmação de Exclusão -->
+<div class="modal fade" id="modalExcluir" tabindex="-1" aria-labelledby="modalExcluirLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalExcluirLabel">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <p id="textoConfirmacao">Tem certeza que deseja excluir este plano de aula?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="formExcluir" method="post" action="#">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Excluir</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

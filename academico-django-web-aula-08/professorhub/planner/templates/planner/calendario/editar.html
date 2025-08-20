@@ -1,0 +1,32 @@
+{% extends "planner/base.html" %}
+{% block title %}Editar Calendário{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Editar Calendário</h2>
+    <a href="{% url 'listar_calendarios' %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Voltar
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+
+        <form method="post" action="{% url 'atualizar_calendario' calendario.id %}" id="formCalendario">
+            {% csrf_token %}
+            <!-- 
+                Renderiza o formulário Django associado à variável 'form'.
+                Isso exibe automaticamente todos os campos do formulário, incluindo rótulos, campos de entrada e mensagens de erro.
+                Ideal para exibir rapidamente formulários sem precisar criar manualmente cada campo no template.
+            -->
+            <div class="mb-3">
+                {{ form.as_p }}
+            </div>
+            
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Atualizar Calendário</button>
+                <a href="{% url 'listar_calendarios' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

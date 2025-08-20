@@ -1,0 +1,138 @@
+@startuml Gerir Plano de Aula
+
+skinparam sequenceMessageAlign center
+skinparam backgroundColor white
+skinparam handwritten false
+
+actor Professor
+participant "Interface\nWeb" as UI
+participant "Views" as Views
+participant "Forms" as Forms
+participant "Models" as Models
+database "Banco de\nDados" as DB
+
+' Listagem de Planos de Aula
+group Listar Planos de Aula
+    Professor -> UI: Acessa lista de planos de aula
+    activate UI
+    UI -> Views: listar_planos_aula(request, disciplina_id)
+    activate Views
+    Views -> Models: get_object_or_404(Disciplina)
+    activate Models
+    Models -> DB: SELECT * FROM disciplina
+    DB --> Models: Retorna disciplina
+    Models --> Views: Retorna disciplina
+    deactivate Models
+    Views -> Models: PlanoAula.objects.filter(disciplina=disciplina)
+    activate Models
+    Models -> DB: SELECT * FROM plano_aula
+    DB --> Models: Retorna planos
+    Models --> Views: Lista de planos
+    deactivate Models
+    Views --> UI: Renderiza template com planos
+    deactivate Views
+    UI --> Professor: Exibe lista de planos
+    deactivate UI
+end
+
+' Adicionar Plano de Aula
+group Adicionar Plano de Aula
+    Professor -> UI: Clica em "Adicionar Plano"
+    activate UI
+    UI -> Views: adicionar_plano_aula(request, disciplina_id)
+    activate Views
+    Views -> Forms: PlanoAulaForm()
+    Forms --> Views: Formulário vazio
+    Views --> UI: Renderiza formulário
+    deactivate Views
+    UI --> Professor: Exibe formulário
+    deactivate UI
+    
+    Professor -> UI: Preenche e envia formulário
+    activate UI
+    UI -> Views: POST /disciplina/id/plano/cadastrar
+    activate Views
+    Views -> Forms: PlanoAulaForm(request.POST)
+    activate Forms
+    Forms -> Forms: is_valid()
+    Forms --> Views: Formulário válido
+    deactivate Forms
+    Views -> Models: form.save()
+    activate Models
+    Models -> DB: INSERT INTO plano_aula
+    DB --> Models: Sucesso
+    Models --> Views: Plano salvo
+    deactivate Models
+    Views --> UI: Redireciona para lista
+    deactivate Views
+    UI --> Professor: Exibe mensagem de sucesso
+    deactivate UI
+end
+
+' Editar Plano de Aula
+group Editar Plano de Aula
+    Professor -> UI: Clica em "Editar"
+    activate UI
+    UI -> Views: editar_plano_aula(request, disciplina_id, plano_id)
+    activate Views
+    Views -> Models: get_object_or_404(PlanoAula)
+    activate Models
+    Models -> DB: SELECT * FROM plano_aula
+    DB --> Models: Retorna plano
+    Models --> Views: Plano encontrado
+    deactivate Models
+    Views -> Forms: PlanoAulaForm(instance=plano)
+    Forms --> Views: Formulário preenchido
+    Views --> UI: Renderiza formulário
+    deactivate Views
+    UI --> Professor: Exibe formulário
+    deactivate UI
+    
+    Professor -> UI: Modifica e envia formulário
+    activate UI
+    UI -> Views: POST /disciplina/id/plano/id/atualizar
+    activate Views
+    Views -> Forms: PlanoAulaForm(request.POST, instance=plano)
+    activate Forms
+    Forms -> Forms: is_valid()
+    Forms --> Views: Formulário válido
+    deactivate Forms
+    Views -> Models: form.save()
+    activate Models
+    Models -> DB: UPDATE plano_aula
+    DB --> Models: Sucesso
+    Models --> Views: Plano atualizado
+    deactivate Models
+    Views --> UI: Redireciona para lista
+    deactivate Views
+    UI --> Professor: Exibe mensagem de sucesso
+    deactivate UI
+end
+
+' Remover Plano de Aula
+group Remover Plano de Aula
+    Professor -> UI: Clica em "Remover"
+    activate UI
+    UI -> UI: Exibe modal de confirmação
+    Professor -> UI: Confirma remoção
+    UI -> Views: remover_plano_aula(request, disciplina_id, plano_id)
+    activate Views
+    Views -> Models: get_object_or_404(PlanoAula)
+    activate Models
+    Models -> DB: SELECT * FROM plano_aula
+    DB --> Models: Retorna plano
+    Models --> Views: Plano encontrado
+    deactivate Models
+    Views -> Models: plano.delete()
+    activate Models
+    Models -> DB: DELETE FROM plano_aula
+    DB --> Models: Sucesso
+    Models --> Views: Plano removido
+    deactivate Models
+    Views --> UI: Redireciona para lista
+    deactivate Views
+    UI --> Professor: Exibe mensagem de sucesso
+    deactivate UI
+end
+
+@enduml

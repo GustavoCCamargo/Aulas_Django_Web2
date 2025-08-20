@@ -1,0 +1,27 @@
+{% extends 'planner/base.html' %}
+{% block title %}Editar Disciplina{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Editar Disciplina</h2>
+    <a href="{% url 'listar_disciplinas' %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Voltar
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post" action="{% url 'atualizar_disciplina' disciplina.id %}" id="formDisciplina">
+            {% csrf_token %}
+                        
+            <div class="mb-3">
+                {{ form.as_p }}
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                <a href="{% url 'listar_disciplinas' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

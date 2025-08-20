@@ -1,0 +1,105 @@
+{% extends 'planner/base.html' %}
+
+{% block title %}Gestão de Tarefas - ProfessorHub{% endblock %}
+
+{% block content %}
+<div class="py-4">
+    <h2 class="mb-4">Gestão de Tarefas</h2>
+
+    <!-- Botão para adicionar nova tarefa -->
+    <button class="btn btn-success mb-4" data-bs-toggle="modal" data-bs-target="#addTaskModal">
+        <i class="fas fa-plus"></i> Adicionar Tarefa
+    </button>
+
+    <!-- Tabela de Tarefas -->
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Título</th>
+                    <th>Data de Entrega</th>
+                    <th>Prioridade</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="taskList">
+                <tr>
+                    <td>Preparar Aula 5</td>
+                    <td>2025-03-01</td>
+                    <td>Alta</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Excluir</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Corrigir Provas</td>
+                    <td>2025-02-20</td>
+                    <td>Média</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Excluir</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal para Adicionar Tarefa -->
+<div class="modal fade" id="addTaskModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addTaskModalLabel">Adicionar Nova Tarefa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="taskForm">
+                    <div class="mb-3">
+                        <label for="taskTitle" class="form-label">Título</label>
+                        <input type="text" class="form-control" id="taskTitle" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="taskDueDate" class="form-label">Data de Entrega</label>
+                        <input type="date" class="form-control" id="taskDueDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="taskPriority" class="form-label">Prioridade</label>
+                        <select class="form-control" id="taskPriority" required>
+                            <option value="Alta">Alta</option>
+                            <option value="Média">Média</option>
+                            <option value="Baixa">Baixa</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Salvar Tarefa</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('taskForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const title = document.getElementById('taskTitle').value;
+        const dueDate = document.getElementById('taskDueDate').value;
+        const priority = document.getElementById('taskPriority').value;
+
+        const newRow = `
+            <tr>
+                <td>${title}</td>
+                <td>${dueDate}</td>
+                <td>${priority}</td>
+                <td>
+                    <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Excluir</button>
+                </td>
+            </tr>`;
+
+        document.getElementById('taskList').innerHTML += newRow;
+        var modal = bootstrap.Modal.getInstance(document.getElementById('addTaskModal'));
+        modal.hide();
+        this.reset();
+    });
+</script>
+
+{% endblock %}
